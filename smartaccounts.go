@@ -50,40 +50,40 @@ var (
 
 // SmartAccountResponse represents the top level response on requesting smart accounts
 type SmartAccountResponse struct {
-	Accounts      []SmartAccount
-	StatusMessage string
-	Status        string
+	Accounts      []SmartAccount `json:"accounts"`
+	StatusMessage string         `json:"statusMessage"`
+	Status        string         `json:"status"`
 }
 
 // SmartAccount represents an individual smart account, allowing you to easily add Virtual Accounts and Licenses
 type SmartAccount struct {
-	AccountStatus   string
-	AccountDomain   string
-	AccountName     string
-	AccountType     string
-	Roles           []Role
-	VirtualAccounts *[]VirtualAccount
-	Licenses        *[]License
+	AccountStatus   string            `json:"accountStatus"`
+	AccountDomain   string            `json:"accountDomain"`
+	AccountName     string            `json:"accountName"`
+	AccountType     string            `json:"accountType"`
+	Roles           []Role            `json:"roles"`
+	VirtualAccounts *[]VirtualAccount `json:"virtualAccounts"`
+	Licenses        *[]License        `json:"licenses"`
 }
 
 // Role as specified by Cisco
 type Role struct {
-	Role string
+	Role string `json:"role"`
 }
 
 // VirtualAccountResponse represents the top level response from requesting virtual accounts for a domain.
 type VirtualAccountResponse struct {
-	VirtualAccounts []VirtualAccount
-	StatusMessage   string
-	Status          string
+	VirtualAccounts []VirtualAccount `json:"virtualAccounts"`
+	StatusMessage   string           `json:"statusMessage"`
+	Status          string           `json:"status"`
 }
 
 // VirtualAccount represents an individual virtual account
 type VirtualAccount struct {
-	IsDefault           string // Really a bool in quotes. TODO: Add custom unmarshal
-	Name                string
-	Description         string
-	CommerceAccessLevel string
+	IsDefault           string `json:"isDefault"` // Really a bool in quotes. TODO: Add custom unmarshal
+	Name                string `json:"name"`
+	Description         string `json:"description"`
+	CommerceAccessLevel string `json:"commerceAccessLevel"`
 }
 
 // SearchResponse represents the top level response for a search
