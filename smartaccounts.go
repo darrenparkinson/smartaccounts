@@ -40,12 +40,13 @@ func (e Err) Error() string {
 }
 
 var (
-	ErrBadRequest    = Err("ccw: bad request")
-	ErrUnauthorized  = Err("ccw: unauthorized request")
-	ErrForbidden     = Err("ccw: forbidden")
-	ErrNotFound      = Err("ccw: not found")
-	ErrInternalError = Err("ccw: internal error")
-	ErrUnknown       = Err("ccw: unexpected error occurred")
+	ErrBadRequest      = Err("ccw: bad request")
+	ErrUnauthorized    = Err("ccw: unauthorized request")
+	ErrForbidden       = Err("ccw: forbidden")
+	ErrNotFound        = Err("ccw: not found")
+	ErrInternalError   = Err("ccw: internal error")
+	ErrUnknown         = Err("ccw: unexpected error occurred")
+	ErrNoSubscriptions = Err("ccw: no valid subscriptions found") // received from EA Consumption specifically
 )
 
 // SmartAccountResponse represents the top level response on requesting smart accounts
@@ -163,7 +164,7 @@ func New(client_id, client_secret, username, password string) *Client {
 		password: password,
 		lim:      limiter,
 		HTTPClient: &http.Client{
-			Timeout: 30 * time.Second,
+			Timeout: 60 * time.Second,
 		},
 	}
 }
@@ -285,6 +286,14 @@ func (c *Client) makeRequest(ctx context.Context, req *http.Request, v interface
 		switch res.StatusCode {
 		case 400:
 			ccwErr = ErrBadRequest
+			var subserr EAConsumptionReportError
+			if err = json.NewDecoder(res.Body).Decode(&subserr); err == nil {
+				if subserr.Code == 400001 && subserr.Message == "No Valid Subscriptions found" {
+					ccwErr = ErrNoSubscriptions
+				} else {
+					ccwErr = fmt.Errorf("%w: %d %s", ccwErr, subserr.Code, subserr.Message)
+				}
+			}
 		case 401:
 			ccwErr = ErrUnauthorized
 		case 403:
